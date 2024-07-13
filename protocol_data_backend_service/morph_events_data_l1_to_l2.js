@@ -113,16 +113,112 @@ async function getTotalTransactionsCount(address) {
 async function getTotalLiquiditySupplyData(address) {
 
   const apiUrl = `https://explorer-api-holesky.morphl2.io/api/v2/addresses/${address}/transactions?filter=to%20%7C%20from`;
+  let supplied_amount = 0;
+    
   try {
     const response = await axios.get(apiUrl);
     const transactions = response.data.items;
-    console.log(transactions);
-} catch (error) {
+
+    transactions.forEach(txns => {
+
+      
+    
+      if (txns.method === 'addLiquidity' || txns.method === 'addLiquidityETH') {
+        let tokenData = {};
+        
+        if (txns.method === 'addLiquidity') {
+          // Extract tokenA and tokenB addresses and their respective values
+          const tokenA = txns.decoded_input.parameters.find(param => param.name === 'tokenA');
+          const tokenB = txns.decoded_input.parameters.find(param => param.name === 'tokenB');
+          let amountADesired = txns.decoded_input.parameters.find(param => param.name === 'amountADesired').value ; 
+          let amountBDesired = txns.decoded_input.parameters.find(param => param.name === 'amountBDesired').value ; 
+          
+          amountADesired = amountADesired * Math.pow(10,-18);
+          amountBDesired = amountBDesired * Math.pow(10,-18);
+
+          if (tokenA && tokenB && amountADesired && amountBDesired) {
+
+            tokenData[tokenA.value] = amountADesired;
+            tokenData[tokenB.value] = amountBDesired;
+
+            // USDT
+            if (tokenA.value == "0x9E12AD42c4E4d2acFBADE01a96446e48e6764B98"){
+              amountADesired = amountADesired * 0.00032
+            }
+
+            //UNI
+            else if (tokenA.value == "0x340Bad9627Cb72d1c4cC92c7F53c4995454130Ae"){
+              amountADesired = amountADesired * 0.0026
+
+            }
+
+            if (tokenB.value == "0x9E12AD42c4E4d2acFBADE01a96446e48e6764B98"){
+              amountBDesired = amountADesired * 0.00032
+            }
+
+            //UNI
+            else if (tokenB.value == "0x340Bad9627Cb72d1c4cC92c7F53c4995454130Ae"){
+              amountBDesired = amountBDesired * 0.0026
+
+            }
+
+            supplied_amount = supplied_amount + amountADesired + amountBDesired;
+            supplied_amount = truncate(supplied_amount, 3);
+            
+            // console.log("supplied amount now add liquidity ", supplied_amount);
+            
+          }
+          
+        } else if (txns.method === 'addLiquidityETH') {
+          // Extract token address and values for amountTokenMin and amountETHMin
+          const token = txns.decoded_input.parameters.find(param => param.name === 'token');
+          let amountTokenMin = txns.decoded_input.parameters.find(param => param.name === 'amountTokenMin').value;
+          let amountETHMin = txns.decoded_input.parameters.find(param => param.name === 'amountETHMin').value;
+
+          amountTokenMin = amountTokenMin * Math.pow(10,-18);
+          amountETHMin = amountETHMin * Math.pow(10,-18);
+    
+          if (token && amountTokenMin && amountETHMin) {
+            tokenData[token.value] = {
+              amountTokenMin: amountTokenMin,
+              amountETHMin: amountETHMin
+            };
+
+            // USDT
+            if (token.value == "0x9E12AD42c4E4d2acFBADE01a96446e48e6764B98"){
+              amountTokenMin = amountTokenMin * 0.00032
+            }
+
+            //UNI
+            else if (token.value == "0x340Bad9627Cb72d1c4cC92c7F53c4995454130Ae"){
+              amountTokenMin = amountTokenMin * 0.0026
+
+            }
+
+      
+
+            
+            supplied_amount = supplied_amount + amountTokenMin + amountETHMin;
+            supplied_amount = truncate(supplied_amount, 3);
+
+            // console.log("supplied amount now add liquidity eth ", supplied_amount);
+          }
+        }
+      }
+      
+  })
+
+  console.log("Total amount ", supplied_amount);
+} 
+
+catch (error) {
     console.error('Error fetching transactions:', error);
 }
 
+return supplied_amount;
 
 }
+
 
 
 async function getNFTCounts(address){

@@ -105,7 +105,7 @@ contract TrustScoreNFT is ERC721, Ownable {
     }
 
     // return all the NFTs associated with an address
-    function getNftsPerAddress(address user) public view returns(uint256 count) {
-        return userNftMap[user].length;
+    function getNftsPerAddress(address user) public view returns(uint256[] memory nfts) {
+        return userNftMap[user];
     }
 }

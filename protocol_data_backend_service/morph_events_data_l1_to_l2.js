@@ -241,13 +241,55 @@ async function getNFTCounts(address){
 return nft_count;
 }
 
+
+async function getTokenCount(address) {
+
+
+  const apiURL = `https://explorer-api-holesky.morphl2.io/api/v2/addresses/${address}/tokens?type=ERC-20%2CERC-1155`;
+  
+  const uniqueTokens = new Set();
+  try {
+    const response = await axios.get(apiURL);
+    let tokens_list = response.data.items;
+    if (tokens_list) {
+      // Create a Set to store unique token addresses
+      
+
+      tokens_list.forEach(item => {
+        // Only add the token address to the Set if the value is non-zero
+        if (item.value !== "0") {
+          uniqueTokens.add(item.token.address);
+        }
+      });
+        
+    } else {
+        console.log('No tokens found or unexpected response format.');
+    }
+} catch (error) {
+    console.error('Error fetching transactions:', error);
+}
+
+  
+  return uniqueTokens.size;
+}
+
+
+
 // Replace with the desired address to filter by
 const callerAddress = '0x4b8a65c8ef37430edFaaD1B61Dba2D680f56FFd7'; // L1 to L2 address
 const address2 = `0xA745Cc25C9E5BB2672D26B58785f6884eF50F2c6`;
 
 // Fetch and filter events by the specified caller address
+<<<<<<< Updated upstream
 
 getTotalAmountBridged(address2).catch(console.error);
 getNFTCounts(address2).catch(console.error);
 getTotalTransactionsCount(address2).catch(console.error);
 getTotalLiquiditySupplyData(address2);
+=======
+// getTotalAmountBridged(address2).catch(console.error);
+// getNFTCounts(address2).catch(console.error);
+// getTotalTransactionsCount(address2).catch(console.error);
+// getTotalLiquiditySupplyData(address2);
+console.log(getTokenCount(address2));
+>>>>>>> Stashed changes

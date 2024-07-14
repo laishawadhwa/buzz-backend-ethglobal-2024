@@ -280,16 +280,8 @@ const callerAddress = '0x4b8a65c8ef37430edFaaD1B61Dba2D680f56FFd7'; // L1 to L2 
 const address2 = `0xA745Cc25C9E5BB2672D26B58785f6884eF50F2c6`;
 
 // Fetch and filter events by the specified caller address
-<<<<<<< Updated upstream
-
-getTotalAmountBridged(address2).catch(console.error);
-getNFTCounts(address2).catch(console.error);
-getTotalTransactionsCount(address2).catch(console.error);
-getTotalLiquiditySupplyData(address2);
-=======
 // getTotalAmountBridged(address2).catch(console.error);
 // getNFTCounts(address2).catch(console.error);
 // getTotalTransactionsCount(address2).catch(console.error);
 // getTotalLiquiditySupplyData(address2);
 console.log(getTokenCount(address2));
->>>>>>> Stashed changes

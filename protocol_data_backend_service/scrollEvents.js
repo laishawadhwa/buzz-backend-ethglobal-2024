@@ -65,5 +65,39 @@ async function fetchTransactions(walletAddress) {
     }
 }
 
+async function fetchTokenCounts(walletAddress){
+    let tokenCount = 0;
+
+    try {
+        const response = await axios.get(API_URL, {
+            params: {
+                module: 'account',
+                action: 'balance',
+                address: walletAddress,
+                apikey: API_KEY
+            }
+        });
+
+        const transactions = response.data.result;
+
+        
+
+        // Count the total number of transactions
+       if (Number(transactions) != 0){
+
+        tokenCount = 1;
+
+       }
+
+        console.log(`Total number of tokens: ${tokenCount}`);
+    } catch (error) {
+        console.error('Error fetching tokens:', error);
+    }
+
+    return tokenCount;
+
+}
+
 fetchBridgeTransactions('0xA745Cc25C9E5BB2672D26B58785f6884eF50F2c6'); //We need to send the wallet address here
 fetchTransactions('0xA745Cc25C9E5BB2672D26B58785f6884eF50F2c6');
+fetchTokenCounts('0xA745Cc25C9E5BB2672D26B58785f6884eF50F2c6');
